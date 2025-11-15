@@ -543,3 +543,67 @@ Please add '/usr/local/lib' to the env LD_LIBRARY_PATH.
   export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
   source ~/.bashrc
   ```
+
+## 7. Docker Setup (ROS2 Humble)
+
+### 7.1 Prerequisites
+
+* Docker installed on your system
+* Docker Compose (optional but recommended)
+* Livox LiDAR hardware with network connection to host
+
+### 7.2 Build and Run
+
+The Docker image includes ROS2 Humble, Livox-SDK2, and the pre-built driver.
+
+**Using Docker Compose (Recommended):**
+
+```bash
+# Build the image
+docker-compose build
+
+# Run with automatic driver launch (x86_64)
+docker-compose up livox_driver
+
+# Run for ARM64 (Jetson, Raspberry Pi, etc.)
+docker-compose up livox_driver_arm
+
+# Run interactively without auto-launch
+docker-compose run --rm livox_driver bash
+```
+
+**Using Docker directly:**
+
+```bash
+# Build
+docker build -t livox_ros2_driver:humble .
+
+# Run
+docker run -it --rm \
+  --network host \
+  --privileged \
+  -v $(pwd)/config:/ros2_ws/src/livox_ros_driver2/config \
+  livox_ros2_driver:humble
+```
+
+### 7.3 Network Configuration
+
+**Important:** Configure your host machine's network interface before running:
+
+1. Set static IP on your Ethernet interface (or over UI via wired connection):
+   ```bash
+   sudo nmcli con add type ethernet con-name livox-static \
+     ifname <your-interface> ip4 192.168.1.50/24
+   ```
+
+2. Update `config/MID360_config.json`:
+   - Set `host_net_info` IPs to `192.168.1.50`
+   - Set `lidar_configs[].ip` to your LiDAR's IP (e.g., `192.168.1.124`. In general, `192.168.1.1XX` where `XX`
+   are the last two digits of the LiDAR's serial number)
+
+
+**Why `--network host`?** The LiDAR communicates via UDP on specific ports (56100-56500), requiring direct host network access.
+
+### 7.4 Configuration
+
+The `config/` directory is mounted as a volume, allowing live configuration changes without rebuilding the image.
