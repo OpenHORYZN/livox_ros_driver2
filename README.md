@@ -560,16 +560,16 @@ The Docker image includes ROS2 Humble, Livox-SDK2, and the pre-built driver.
 
 ```bash
 # Build the image
-docker-compose build
+docker compose build
 
 # Run with automatic driver launch (x86_64)
-docker-compose up livox_driver
+docker compose up livox_driver
 
 # Run for ARM64 (Jetson, Raspberry Pi, etc.)
-docker-compose up livox_driver_arm
+docker compose up livox_driver_arm
 
 # Run interactively without auto-launch
-docker-compose run --rm livox_driver bash
+docker compose run --rm livox_driver bash
 ```
 
 **Using Docker directly:**

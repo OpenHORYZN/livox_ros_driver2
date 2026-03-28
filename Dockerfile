@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libpcl-dev \
     ros-humble-pcl-conversions \
     ros-humble-pcl-ros \
+    ros-$ROS_DISTRO-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/*
 
 # Build and install Livox-SDK2
@@ -21,6 +22,8 @@ RUN git clone https://github.com/Livox-SDK/Livox-SDK2.git /tmp/Livox-SDK2 && \
     cmake .. && make -j$(nproc) && make install && \
     ldconfig && \
     rm -rf /tmp/Livox-SDK2
+
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 # Create ROS2 workspace and copy source
 RUN mkdir -p /ros2_ws/src
